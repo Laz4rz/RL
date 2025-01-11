@@ -2,6 +2,9 @@
 
 Shenanigans while following Naklecha (https://naklecha.notion.site/a-reinforcement-learning-guide). Parts of this texts are rewritten/copied from the original blog, and some will be added by me to elevate my understanding.
 
+Implementations:
+- RTDP (https://github.com/Laz4rz/RL/blob/main/rtdp.py)
+
 ### Value function
 
 $V(s) = \textrm{max}(V(s'))$
