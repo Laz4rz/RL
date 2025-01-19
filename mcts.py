@@ -1,6 +1,21 @@
 import numpy as np
 from tqdm import tqdm
 
+'''
+This script is an implementation of the Monte Carlo Tree Search (MCTS) algorithm.
+The problem solved is probably the simplest problem available, but shouldn't be too hard
+to adapt to more complex problems.
+
+The problem is a NxM maze, where the agent starts at some (x, y) position and has to reach
+a terminal state at some (x', y') position. The agent can move up, down, left, or right 
+freely, only being blocked by the walls of the maze. The agent has no knowledge of the maze.
+
+Some ideas for better convergence to optimal path length:
+ - add global depth, discount based on the global depth in backprop (gamma)
+ - track best path, adapt reward to whether best path was beaten
+ - change C constant in UCB score
+'''
+
 class Node:
     def __init__(self, action, state, parent=None):
         self.action = action
@@ -13,12 +28,18 @@ class Node:
     def __repr__(self):
         return f"Node(action={self.action}, state={self.state}, visits={self.visits}, score={self.score})"
 
+
+def softmax(x):
+    """Compute softmax values for each element of array x."""
+    e_x = np.exp(x - np.max(x))
+    return e_x / e_x.sum()
+
 def ucb_score(parent, child, C=1.4):
     if child.visits == 0 or parent.visits == 0:
         return float('inf')
     return child.score/child.visits + C*np.sqrt(2*np.log(parent.visits)/child.visits)
 
-def select(node, state_space):
+def select(node, state_space, action_picker='softmax'):
     """Select a path through the tree to a leaf node."""
     current = node
     
@@ -32,7 +53,13 @@ def select(node, state_space):
             action: ucb_score(current, child)
             for action, child in current.children.items()
         }
-        best_action = max(ucb_values.items(), key=lambda x: x[1])[0]
+        # max picking
+        if action_picker == 'max':
+            best_action = max(ucb_values.items(), key=lambda x: x[1])[0]
+        # softmax multinomial sampling
+        elif action_picker == 'softmax':
+            probabilities = softmax(list(ucb_values.values()))
+            best_action = np.random.choice(list(ucb_values.keys()), p=probabilities)
         current = current.children[best_action]
     
     return current
@@ -55,14 +82,14 @@ def expand(node, possible_actions):
     
     return child
 
-def playout(state, state_space, terminal_state, max_depth=3):
+def playout(state, state_space, terminal_state, max_depth=10):
     """Run a random simulation from state to terminal state or max_depth."""
     current_state = state
     depth = 0
     
     while depth < max_depth:
         if current_state == terminal_state:
-            return 100
+            return 100 - depth
             
         possible_actions = get_possible_actions(current_state, state_space)
             
@@ -73,7 +100,7 @@ def playout(state, state_space, terminal_state, max_depth=3):
         current_state = transition(current_state, action)
         depth += 1
     
-    return -20
+    return -depth
 
 def backpropagate(node, reward):
     """Update node statistics back up the tree."""
@@ -107,7 +134,7 @@ def get_possible_actions(state, state_space):
         actions.append('right')
     return actions
 
-def mcts(initial_state, terminal_state, state_space, max_iter=1000, debug=False):
+def mcts(initial_state, terminal_state, state_space, max_iter=1000, debug=False, action_picker='softmax'):
     root = Node("", initial_state)
     
     for i in range(max_iter):
@@ -181,12 +208,21 @@ if __name__ == "__main__":
     print("\nInitial state:")
     print_state_space(state_space, initial_state, terminal_state)
     
-    root = mcts(initial_state, terminal_state, state_space, max_iter=100000, debug=False)
+    root = mcts(initial_state, terminal_state, state_space, max_iter=1000, debug=False)
     print("\nBest path:")
     print(best_path(root))
     print("\nFinal state space best path:")
+    state = initial_state
     for action in best_path(root):
-        initial_state = transition(initial_state, action)
-        print_state_space(state_space, initial_state, terminal_state)
+        state = transition(state, action)
+        print_state_space(state_space, state, terminal_state)
         print()
 
+    for max_iter in [50, 100, 500, 1000, 5000]:
+        avg_path_length = 0
+        for _ in range(10):
+            root = mcts(initial_state, terminal_state, state_space, max_iter=1000, debug=False)
+            path = best_path(root)
+            avg_path_length += len(path)
+        avg_path_length /= 10
+        print(f"Average path length for {max_iter} iterations: {avg_path_length}")
