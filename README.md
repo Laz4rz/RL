@@ -4,6 +4,7 @@ Shenanigans while following Naklecha (https://naklecha.notion.site/a-reinforceme
 
 Implementations:
 - RTDP (https://github.com/Laz4rz/RL/blob/main/rtdp.py)
+- MCTS (https://github.com/Laz4rz/RL/blob/main/mcts.py)
 
 ### Value function
 
