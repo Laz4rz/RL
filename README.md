@@ -7,6 +7,37 @@ Implementations:
 - MCTS (https://github.com/Laz4rz/RL/blob/main/mcts.py)
 - PRM/ORM scoring (https://github.com/Laz4rz/RL/blob/main/prm_orm.py)
 
+
+### Other (me&deepseek)
+
+#### Outcome Reward Model (ORM)
+
+The Outcome Reward Model (ORM) evaluates the correctness of the final answer in a generated solution. It assigns a binary score (1 for correct, 0 for incorrect) based on whether the final answer matches the ground truth. ORM is trained on labeled datasets where the final answer is explicitly marked as correct or incorrect. The model ignores the intermediate steps and looks at the answer, usually extracted from \boxed{}.
+
+**Key Features**:
+- **For**: Final answer rewards
+- **Training Data**: Labeled pairs of solutions and binary scores (1 for correct, 0 for incorrect)
+
+**Why ORM instead of ground truth?:**
+The answer does not have to perfectly match the ground truth, ORM returns a 0-1 scored based on the confidence of the model. Generalizes on different answer forms and rounding errors.
+
+#### Process Reward Model (PRM)
+
+The Process Reward Model (PRM) evaluates the correctness and logical coherence of each step in a generated solution. It assigns a score to each step based on its validity and alignment with the problem's context. PRM is a transformer-based model, trained on datasets annotated with step-level correctness, allowing it to assess the quality of reasoning even if the final answer is correct.
+
+**Key Features**:
+- **For**: Step-by-step reasoning rewards
+- **Training Data**: Solutions annotated with step-level correctness (e.g., "Step 2: Correct subtraction")
+
+#### Unbiased pass@k estimator
+
+Estimates the probability that **at least one** of $k$ randomly selected samples solves a problem, given $n$ total samples and $m$ passing samples:
+
+$$\text{pass@}k = 1 - \frac{\dbinom{n - m}{k}}{\dbinom{n}{k}}$$
+
+Where: $n$ — number of generated samples, $m$ — passing samples, $k$ — desired pass@k. The number of generated samples $n$ is arbitrary.
+
+
 ### Value function
 
 $V(s) = \textrm{max}(V(s'))$
