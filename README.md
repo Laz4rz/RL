@@ -1,10 +1,11 @@
 # Reinforcement Learning
 
-Shenanigans while following Naklecha (https://naklecha.notion.site/a-reinforcement-learning-guide). Parts of this texts are rewritten/copied from the original blog, and some will be added by me to elevate my understanding.
+Shenanigans while following Naklecha (https://naklecha.notion.site/a-reinforcement-learning-guide) and other Reinforcement Learning/LLM RL resources (ie. Scaling Test-Time Compute by HF). Parts of this texts are rewritten/copied from the original blogs, and some will be added by me to elevate my understanding.
 
 Implementations:
 - RTDP (https://github.com/Laz4rz/RL/blob/main/rtdp.py)
 - MCTS (https://github.com/Laz4rz/RL/blob/main/mcts.py)
+- PRM/ORM scoring (https://github.com/Laz4rz/RL/blob/main/prm_orm.py)
 
 ### Value function
 
