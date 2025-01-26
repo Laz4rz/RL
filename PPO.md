@@ -11,9 +11,9 @@ Once you're done, you can start reading the next section. We start with rewards,
 
 This text is mostly me learning and understanding PPO and LLM-RL methods as I write. I try to write about all the gaps I found in other sources, as well as putting math, intuition, or code wherever it feels necessary to make sure that nothing is missing. 
 
-## In nutshell
+## In a nutshell
 
-Consists of a Value Neural Network (state $\rightarrow$ value) and Policy Neural Network (state $\rightarrow$ actions distribution) that are trained at the same time. Reward model is trained separately, with either human labeled data or verifiable answers (eg. math).
+PPO consists of a Value Neural Network (state $\rightarrow$ value) and Policy Neural Network (state $\rightarrow$ actions distribution) that are trained at the same time. Reward model is trained separately, with either human labeled data or verifiable answers (eg. math).
 
 ## Rewards
 
@@ -86,7 +86,7 @@ The main gist is that we compute the reward for a state (generated answer) with 
 
 ### Loss function (Courtesy of R1 and me)
 
-Don't be scarred. 
+Don't be scared. 
 
 #### Total Loss
 The combined loss for PPO training:
