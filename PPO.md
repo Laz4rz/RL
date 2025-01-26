@@ -1,6 +1,4 @@
-# Proximal Policy Optimization (PPO) (may be wrong, cause it's like 95% my text)
-
-Consists of a Value Neural Network (state $\rightarrow$ value) and Policy Neural Network (state $\rightarrow$ actions distribution) that are trained at the same time. Reward model is trained separately, but is crucial for the whole operation. 
+# Proximal Policy Optimization (PPO)
 
 The writeup kind of assumes that you are either familiar with the most basic Reinforcement Learning conceptes (states, actions, rewards, decay). If you went through any intro RL course you should be good. If not then, there are two very easy ways to get up to speed:
 
@@ -12,6 +10,10 @@ The writeup kind of assumes that you are either familiar with the most basic Rei
 Once you're done, you can start reading the next section. We start with rewards, as they are most crucial, and somehow (from my experience) often treated superficially in other writeups. Then move to what models we need, and how they're connected. Only then at the very end, we will go through the training loop.
 
 This text is mostly me learning and understanding PPO and LLM-RL methods as I write. I try to write about all the gaps I found in other sources, as well as putting math, intuition, or code wherever it feels necessary to make sure that nothing is missing. 
+
+## In nutshell
+
+Consists of a Value Neural Network (state $\rightarrow$ value) and Policy Neural Network (state $\rightarrow$ actions distribution) that are trained at the same time. Reward model is trained separately, with either human labeled data or verifiable answers (eg. math).
 
 ## Rewards
 
