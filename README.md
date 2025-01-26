@@ -7,10 +7,13 @@ Implementations:
 - MCTS (https://github.com/Laz4rz/RL/blob/main/mcts.py)
 - PRM/ORM scoring (https://github.com/Laz4rz/RL/blob/main/prm_orm.py)
 
+Writeups:
+- PPO (https://github.com/Laz4rz/RL/blob/main/PPO.md)
 
-### Other (me&deepseek)
 
-#### Outcome Reward Model (ORM)
+# Others or Vocabulary (me&deepseek)
+
+### Outcome Reward Model (ORM)
 
 The Outcome Reward Model (ORM) evaluates the correctness of the final answer in a generated solution. It assigns a binary score (1 for correct, 0 for incorrect) based on whether the final answer matches the ground truth. ORM is trained on labeled datasets where the final answer is explicitly marked as correct or incorrect. The model ignores the intermediate steps and looks at the answer, usually extracted from \boxed{}.
 
@@ -21,7 +24,7 @@ The Outcome Reward Model (ORM) evaluates the correctness of the final answer in 
 **Why ORM instead of ground truth?:**
 The answer does not have to perfectly match the ground truth, ORM returns a 0-1 scored based on the confidence of the model. Generalizes on different answer forms and rounding errors.
 
-#### Process Reward Model (PRM)
+### Process Reward Model (PRM)
 
 The Process Reward Model (PRM) evaluates the correctness and logical coherence of each step in a generated solution. It assigns a score to each step based on its validity and alignment with the problem's context. PRM is a transformer-based model, trained on datasets annotated with step-level correctness, allowing it to assess the quality of reasoning even if the final answer is correct.
 
@@ -29,13 +32,32 @@ The Process Reward Model (PRM) evaluates the correctness and logical coherence o
 - **For**: Step-by-step reasoning rewards
 - **Training Data**: Solutions annotated with step-level correctness (e.g., "Step 2: Correct subtraction")
 
-#### Unbiased pass@k estimator
+### Unbiased pass@k estimator
 
 Estimates the probability that **at least one** of $k$ randomly selected samples solves a problem, given $n$ total samples and $m$ passing samples:
 
 $$\text{pass@}k = 1 - \frac{\dbinom{n - m}{k}}{\dbinom{n}{k}}$$
 
 Where: $n$ — number of generated samples, $m$ — passing samples, $k$ — desired pass@k. The number of generated samples $n$ is arbitrary.
+
+```python
+def pass_at_k(n: int, c: int, k: int) -> float:
+    """A numerically stable method for calculating an unbiased estimate of pass@k.
+
+    Taken from OpenAI's Codex paper: https://arxiv.org/abs/2107.03374
+
+    Args:
+        n (`int`): total number of samples
+        c (`int`): number of correct samples
+        k (`int`): k in pass@$k$
+
+    Returns:
+        `float`: an unbiased estimate of pass@k
+    """
+    if n - c < k:
+        return 1.0
+    return 1.0 - np.prod(1.0 - k / np.arange(n - c + 1, n + 1))
+```
 
 
 ### Value function
@@ -44,7 +66,7 @@ $V(s) = \textrm{max}(V(s'))$
 
 where $s$ — current state ($\in S$), $s'$ — next state after taking some action $a\in A$.
 
-##### Discount ($\gamma$)
+#### Discount ($\gamma$)
 
 To differentiate between close and distant wins, we introduce the discount factor $\gamma$.
 
@@ -63,7 +85,7 @@ Instead of all positions being valued the same.
 
 Discount factor is especially important in environments that are non-determninistic (have hidden information), like DOTA, as you'd value winning the game as fast as possible, minimizng the amount of unknowns that could negatively impact your current win condtions.   
 
-##### Reward ($R(s,a)$)
+#### Reward ($R(s,a)$)
 
 If we only based our value function on the result of finishing the game, then our value would only "flow backwards", while in reality certain positions may be more valuable then others even if they lead to winning in the same number of steps (this is non-intuitive, at least in chess, and I'm unsure whether I fully see it — I'd think about computational efficiency here). 
 
@@ -125,7 +147,7 @@ So called action-value function is often used as an intermediate step for calcul
 
 $Q(s,a) = R(s,a) + \gamma * V(s')$
 
-##### Exploration vs Exploitation
+### Exploration vs Exploitation
 
 We are still facing the problem of having to go through all the combinations of different moves, to calculate the values assigned to each state and action. This usually gets so mindblowingly computationally costly, that we have to do with some partial tree traversal. 
 
